@@ -1,7 +1,7 @@
 import torch
 from tqdm.auto import tqdm
 from torch.utils.data import DataLoader
-from utils import save_model
+from utils.model_utils import save_model
 
 def train_model(model: torch.nn.Module,
                 train_dataloader: DataLoader,
