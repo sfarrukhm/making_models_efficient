@@ -1,4 +1,9 @@
+import sys
 import os
+
+# Add project root (making_models_efficient/) to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import argparse
 import torch
 import torch.nn as nn
@@ -8,7 +13,7 @@ from torchmetrics.classification import MulticlassAccuracy
 from PIL import Image
 
 from models.teacher import VisionEagle
-from models.train_evaluate_predict import train_model
+from train.train_utils import train_model
 
 
 # --------------------------------------------
