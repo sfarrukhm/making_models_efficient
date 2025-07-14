@@ -3,7 +3,7 @@ import glob as gb
 import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from torchvision import datasets
+from torchvision import datasets,transforms
 
 def get_image_size(path, is_pred=False):
     size = []
@@ -14,4 +14,4 @@ def get_image_size(path, is_pred=False):
             size.append(image.shape)
     return pd.Series(size).value_counts()
 def make_torch_dataset_from_image_folder(root, transform):
-    return datasets.ImageFolder(root=train_path, transform=global_transforms)
+    return datasets.ImageFolder(root=root, transform=transform)
