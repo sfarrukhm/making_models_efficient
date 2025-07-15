@@ -131,7 +131,7 @@ def evaluate_model(model: torch.nn.Module,
                 preds = outputs.argmax(dim=1)
                 total_accuracy += (preds == labels).sum().item()
 
-            total_samples += f.size(0)
+            total_samples += features.size(0)
 
     avg_loss = total_loss / total_samples
     avg_acc = total_accuracy / total_samples
