@@ -3,7 +3,7 @@ from tqdm.auto import tqdm
 import os
 import torch
 import torch.nn.functional as F
-
+from utils.train_evaluate_predict import evaluate_model
 ### Student Training Setup
 def train_student(
     student_model,
