@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 class StudentVisionEagle(nn.Module):
     def __init__(self, num_classes=6):
-        super(StudentNet, self).__init__()
+        super(StudentVisionEagle, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(3,32,kernel_size=3, stride=1,
                      padding=1),  # [B, 3, 100, 100] -> [B, 32, 100, 100]
