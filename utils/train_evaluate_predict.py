@@ -32,11 +32,11 @@ def train_model(model: torch.nn.Module,
     train_loss, train_acc = 0, 0
     model.train()
 
-    for images, labels in tqdm(train_dataloader, desc=f"Epoch {epoch+1}/{epochs}\t"):
-      images, labels = images.to(device), labels.to(device)
+    for features, labels in tqdm(train_dataloader, desc=f"Epoch {epoch+1}/{epochs}\t"):
+      features, labels = features.to(device), labels.to(device)
 
       # Forward pass
-      labels_preds = model(images)
+      labels_preds = model(features)
 
       # Calculate loss
       loss = loss_fn(labels_preds, labels)
@@ -61,11 +61,11 @@ def train_model(model: torch.nn.Module,
     model.eval()
 
     with torch.inference_mode():
-      for images, labels in tqdm(val_dataloader, desc="Validation", leave=False):
-        images, labels = images.to(device), labels.to(device)
+      for features, labels in tqdm(val_dataloader, desc="Validation", leave=False):
+        features, labels = features.to(device), labels.to(device)
 
         # Forward pass for validation
-        labels_preds = model(images)
+        labels_preds = model(features)
 
         # Calculate loss
         val_loss += loss_fn(labels_preds, labels).item()
@@ -102,29 +102,42 @@ def train_model(model: torch.nn.Module,
 
   return history
 
-def evaluate_model(model: torch.nn.Module, data: DataLoader,loss_fn, device):
-  total_loss, correct_predictions, total_samples = 0, 0, 0
-  model.eval()
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+import torch
 
-  with torch.inference_mode():
-      for images, labels in tqdm(data, desc="Evaluation"):
-          images, labels = images.to(device), labels.to(device)
-          
-          # Forward pass
-          labels_preds = model(images)
-          
-          # Calculate batch loss
-          total_loss += loss_fn(labels_preds, labels).item() * images.size(0)  # multiply by batch size to sum
-          # Calculate batch accuracy
-          if labels.ndim == 2:  # if labels are one-hot encoded
-              labels = labels.argmax(dim=1)
-          
-          correct_predictions += (labels_preds.argmax(dim=1) == labels).sum().item()
-          total_samples += labels.size(0)
-  # Average loss and accuracy over the entire validation set
-  avg_loss = total_loss / total_samples
-  avg_accuracy = correct_predictions / total_samples
-  return avg_loss, avg_accuracy
+def evaluate_model(model: torch.nn.Module,
+                   dataloader: DataLoader,
+                   loss_fn,
+                   device,
+                   accuracy_fn=None):  # Optional argument
+
+    total_loss = 0.0
+    total_accuracy = 0.0
+    total_samples = 0
+
+    model.eval()
+    with torch.inference_mode():
+        for features, labels in tqdm(dataloader, desc="Evaluation"):
+            features, labels = features.to(device), labels.to(device)
+
+            outputs = model(features)
+            loss = loss_fn(outputs, labels)
+            total_loss += loss.item() * features.size(0)  # sum up batch loss
+
+            if accuracy_fn:
+                total_accuracy += accuracy_fn(outputs, labels) * features.size(0)
+            else:
+                preds = outputs.argmax(dim=1)
+                total_accuracy += (preds == labels).sum().item()
+
+            total_samples += f.size(0)
+
+    avg_loss = total_loss / total_samples
+    avg_acc = total_accuracy / total_samples
+
+    return avg_loss, avg_acc
+
 
 def make_prediction(model: torch.nn.Module, data_loader: DataLoader, device):
   model.eval()
@@ -132,9 +145,9 @@ def make_prediction(model: torch.nn.Module, data_loader: DataLoader, device):
   true_labels = []
 
   with torch.inference_mode():
-    for images, labels in data_loader:
-      images = images.to(device)
-      y_pred = model(images).argmax(dim=1)
+    for features, labels in data_loader:
+      features = features.to(device)
+      y_pred = model(features).argmax(dim=1)
 
       pred_labels.append(y_pred)
       true_labels.append(labels)
