@@ -1,6 +1,5 @@
-
+## 📁 Repository Structure
 ```markdown
-📁 Project Structure
 ├── models/         # Model architecture and saved checkpoints
 ├── notebooks/      # Jupyter notebooks for training and evaluation
 ├── utils/          # Helper scripts and utilities
