@@ -20,26 +20,23 @@ def evaluate_accuracy(model, dataloader, device):
 
     return accuracy_score(all_labels, all_preds)
 
-def measure_latency(model, input_size=(1, 3, 100, 100), device='cuda', num_runs=100):
+def measure_latency(model, input_size=(1, 3, 100, 100), num_runs=100):
     model.eval()
-    dummy_input = torch.randn(input_size).to(device)
-    model.to(device)
+    model.to("cpu")  # ensure model is on CPU
+    dummy_input = torch.randn(input_size)  # keep on CPU
 
     # Warm-up
     for _ in range(10):
         _ = model(dummy_input)
 
-    torch.cuda.synchronize() if device == 'cuda' else None
     start_time = time.time()
-
     with torch.no_grad():
         for _ in range(num_runs):
             _ = model(dummy_input)
-
-    torch.cuda.synchronize() if device == 'cuda' else None
     end_time = time.time()
 
-    return ((end_time - start_time) / num_runs) * 1000  # ms per image
+    avg_latency_ms = (end_time - start_time) / num_runs * 1000
+    return avg_latency_ms  # ms per image
 
 def get_model_size(model_path):
     size_bytes = os.path.getsize(model_path)
