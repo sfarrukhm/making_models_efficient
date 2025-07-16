@@ -47,17 +47,18 @@ Conv → BN → ReLU → MaxPool → x3 → AdaptiveAvgPool → FC → Output
 
 ### Teacher Predictions
 
-<img src="file:///C:/Users/HP/Git/repos/snapshots/teacher_predictions.png" title="" alt="Teacher Predictions" width="792">
+![Alt text](snapshots/teacher_predictions.png)
 
 
-
-### Teacher's Confusion <img title="" src="file:///C:/Users/HP/Git/repos/snapshots/confusion_teacher.png" alt="Confusion" width="463">
-
+### Teacher's Confusion 
+![Alt text](snapshots/confusion_teacher.png)
 ### 
 
-### Student's Predictions ![Predictions](C:\Users\HP\Git\repos\snapshots\student_predictions.png)
+### Student's Predictions 
+![Alt text](snapshots/student_predictions.png)
 
-### Student's Confusion<img src="file:///C:/Users/HP/Git/repos/snapshots/confusion_student.png" title="" alt="Confusion" width="499">
+### Student's Confusion
+![Alt text](snapshots/confusion_student.png)
 
 ---
 
