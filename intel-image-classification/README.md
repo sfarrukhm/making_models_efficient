@@ -35,7 +35,7 @@ Conv → BN → ReLU → MaxPool → x3 → AdaptiveAvgPool → FC → Output
 | Metric                  | Teacher  | Student | Difference/Ratio |
 | ----------------------- | -------- | ------- | ---------------- |
 | **Accuracy (%)**        | 89.50    | 81.13   | 8.37 ↓           |
-| **Latency (ms)**        | 23088.15 | 5794.44 | 17293.71 ↓       |
+| **Latency (s)**         | 23       | 5.7     | 17.3 ↓           |
 | **Speedup**             | -        | -       | 3.98× ↑          |
 | **Model Size (MB)**     | 91.08    | 0.37    | 246.75× ↓        |
 | **#Params (Millions)**  | 23.83    | 0.09    | 23.73M ↓         |
