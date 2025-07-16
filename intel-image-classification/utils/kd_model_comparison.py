@@ -20,10 +20,10 @@ def evaluate_accuracy(model, dataloader, device):
 
     return accuracy_score(all_labels, all_preds)
 
-def measure_latency(model, input_size=(1, 3, 100, 100), num_runs=100):
+def measure_latency(model, device,input_size=(1, 3, 100, 100), num_runs=100):
     model.eval()
-    model.to("cpu")  # ensure model is on CPU
-    dummy_input = torch.randn(input_size)  # keep on CPU
+    model.to(device)  
+    dummy_input = torch.randn(input_size).to(device)
 
     # Warm-up
     for _ in range(10):
