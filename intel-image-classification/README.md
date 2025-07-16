@@ -1,4 +1,4 @@
-🧠 Knowledge Distillation for Intel Image Classification
+## 🧠 Knowledge Distillation for Intel Image Classification
 
 This repo implements a knowledge distillation pipeline where a large VisionEagle-based teacher model guides a lightweight CNN student for image classification on the [Intel Image Classification Dataset](https://www.kaggle.com/datasets/puneet6060/intel-image-classification).
 
