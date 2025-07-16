@@ -20,10 +20,10 @@ def evaluate_accuracy(model, dataloader, device):
 
     return accuracy_score(all_labels, all_preds)
 
-def measure_latency(model, device,input_size=(1, 3, 100, 100), num_runs=100):
+def measure_latency(model,input_size=(1, 3, 100, 100), num_runs=100):
     model.eval()
-    model.to(device)  
-    dummy_input = torch.randn(input_size).to(device)
+    model.to("cpu")  
+    dummy_input = torch.randn(input_size)
 
     # Warm-up
     for _ in range(10):
@@ -52,8 +52,8 @@ def generate_report(teacher_model, student_model, test_loader, device,
     student_acc = evaluate_accuracy(student_model, test_loader, device)
 
     # Latency
-    teacher_latency = measure_latency(teacher_model, device=device)
-    student_latency = measure_latency(student_model, device=device)
+    teacher_latency = measure_latency(teacher_model)
+    student_latency = measure_latency(student_model)
 
     # Size
     teacher_size = get_model_size(teacher_path)
