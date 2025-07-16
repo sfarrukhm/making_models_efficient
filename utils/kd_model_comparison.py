@@ -20,7 +20,7 @@ def evaluate_accuracy(model, dataloader, device):
 
     return accuracy_score(all_labels, all_preds)
 
-def measure_latency(model, input_size=(1, 3, 150, 150), device='cuda', num_runs=100):
+def measure_latency(model, input_size=(1, 3, 100, 100), device='cuda', num_runs=100):
     model.eval()
     dummy_input = torch.randn(input_size).to(device)
     model.to(device)
