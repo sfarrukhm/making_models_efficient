@@ -60,21 +60,4 @@ Conv → BN → ReLU → MaxPool → x3 → AdaptiveAvgPool → FC → Output
 ### Student's Confusion
 ![Alt text](snapshots/confusion_student.png)
 
----
-
-## 🗂️ Repo Structure
-
-```bash
-.
-├── models/                  # Teacher and student architectures
-├── train.py                # CLI training script
-├── evaluate.py             # Evaluation and reporting
-├── utils/                  # Helpers: KD loss, metrics, loaders
-├── checkpoints/            # Saved model weights
-├── images/                 # Prediction snapshots & model diagrams
-└── README.md
-```
-
-
-
 
