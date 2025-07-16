@@ -44,7 +44,8 @@ def measure_latency(model, input_size=(1, 3, 100, 100), device='cuda', num_runs=
 def get_model_size(model_path):
     size_bytes = os.path.getsize(model_path)
     return size_bytes / (1024 ** 2)  # Convert to MB
-
+def count_params(model):
+    return sum(p.numel() for p in model.parameters())
 def generate_report(teacher_model, student_model, test_loader, device,
                     teacher_path, student_path):
     print("\n🚀 Running Knowledge Distillation Evaluation...\n")
@@ -66,17 +67,21 @@ def generate_report(teacher_model, student_model, test_loader, device,
     speedup = teacher_latency / student_latency
     size_reduction = teacher_size / student_size
 
+
+    teacher_params = count_params(teacher_model)
+    student_params = count_params(student_model)
+    param_reduction = ((teacher_params - student_params) / teacher_params) * 100
+
     # Report
     print("\n📊 KD Performance Report:")
-    print("=" * 40)
-    print(f"{'Metric':<20} {'Teacher':<10} {'Student':<10}")
-    print("-" * 40)
-    print(f"{'Accuracy (%)':<20} {teacher_acc*100:>8.2f}   {student_acc*100:>8.2f}")
-    print(f"{'Latency (ms)':<20} {teacher_latency:>8.2f}   {student_latency:>8.2f}")
-    print(f"{'Size (MB)':<20} {teacher_size:>8.2f}   {student_size:>8.2f}")
-    print("=" * 40)
-    print(f"{'Accuracy Gap':<20}: {accuracy_gap:.4f}")
-    print(f"{'Speedup':<20}: {speedup:.2f}x")
-    print(f"{'Size Reduction':<20}: {size_reduction:.2f}x smaller")
-    print("=" * 40)
+    print(f"{'Metric':<25}{'Teacher':<15}{'Student':<15}{'Difference/Ratio'}")
+    print("-" * 70)
+    print(f"{'Accuracy (%)':<25}{teacher_acc*100:<15.2f}{student_acc*100:<15.2f}{(teacher_acc - student_acc)*100:.2f} ↓")
+    print(f"{'Latency (ms)':<25}{teacher_latency*1000:<15.2f}{student_latency*1000:<15.2f}{(teacher_latency - student_latency)*1000:.2f} ms ↓")
+    print(f"{'Speedup':<25}{'-':<15}{'-':<15}{teacher_latency / student_latency:.2f}× ↑")
+    print(f"{'Model Size (MB)':<25}{teacher_size:<15.2f}{student_size:<15.2f}{teacher_size/student_size:.2f}× ↓")
+    print(f"{'#Params (Millions)':<25}{teacher_params/1e6:<15.2f}{student_params/1e6:<15.2f}{(teacher_params - student_params)/1e6:.2f}M ↓")
+    print(f"{'Param Reduction (%)':<25}{'-':<15}{'-':<15}{param_reduction:.2f}% ↓")
+    print("-" * 70)
+
 
