@@ -20,31 +20,6 @@ def fine_grained_prune(tensor: torch.Tensor, sparsity: float) -> torch.Tensor:
 
     return mask
 
-# Histogram of weight distribution
-def plot_weight_distribution(model, bins=256, count_nonzero_only=False):
-    import matplotlib.pyplot as plt
-    fig, axes = plt.subplots(3, 3, figsize=(10, 6))
-    axes = axes.ravel()
-    plot_index = 0
-    for name, param in model.named_parameters():
-        if param.dim() > 1:
-            ax = axes[plot_index]
-            param_cpu = param.detach().view(-1).cpu()
-            if count_nonzero_only:
-                param_cpu = param_cpu[param_cpu != 0]
-            ax.hist(param_cpu, bins=bins, density=True, color='blue', alpha=0.5)
-            ax.set_xlabel(name)
-            ax.set_ylabel('density')
-            plot_index += 1
-            if plot_index >= len(axes):  # avoid index error
-                break
-    fig.suptitle('Histogram of Weights')
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.925)
-    plt.show()
-
-
-
 def test_fine_grained_prune(
     test_tensor=torch.tensor([[-0.46, -0.40, 0.39, 0.19, 0.37],
                               [0.00, 0.40, 0.17, -0.15, 0.16],
