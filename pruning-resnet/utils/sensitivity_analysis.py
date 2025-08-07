@@ -93,3 +93,4 @@ def plot_sensitivity_scan(sparsities, accuracies, dense_model_accuracy):
     fig.tight_layout()
     fig.subplots_adjust(top=0.925)
     plt.show()
+
