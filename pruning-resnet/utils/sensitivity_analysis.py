@@ -1,10 +1,13 @@
 import torch
+import torch.nn as nn
+from torchprofile import profile_macs
+from torch.utils.data import DataLoader
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-from utils import fine_grained_prune
-
+from utils.prune_utils import fine_grained_prune
+from utils.train_evaluate import evaluate
 @torch.no_grad()
 def sensitivity_scan(model, dataloader, scan_step=0.1, scan_start=0.4, scan_end=1.0, verbose=True):
     """
