@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-
+import math
 # Histogram of weight distribution
 def plot_weight_distribution(model, bins=256, count_nonzero_only=False):
     # Get all params with dim > 1
