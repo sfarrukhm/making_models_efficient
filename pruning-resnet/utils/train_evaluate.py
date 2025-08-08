@@ -11,7 +11,7 @@ def train(
   criterion: nn.Module,
   optimizer: Optimizer,
   scheduler: LambdaLR,
-  callbacks = None
+  callbacks = None,
   device: str = 'cuda',
 ) -> None:
   model.train()
@@ -43,7 +43,7 @@ def train(
 def evaluate(
   model: nn.Module,
   dataloader: DataLoader,
-  verbose=False
+  verbose=False,
   device: str = 'cuda',
 ) -> float:
   model.eval()
