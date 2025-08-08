@@ -2,25 +2,31 @@ import matplotlib.pyplot as plt
 
 # Histogram of weight distribution
 def plot_weight_distribution(model, bins=256, count_nonzero_only=False):
-   
-    fig, axes = plt.subplots(3, 3, figsize=(10, 6))
+    # Get all params with dim > 1
+    weight_params = [(name, p) for name, p in model.named_parameters() if p.dim() > 1]
+    
+    # Make grid big enough
+    cols = 3
+    rows = (len(weight_params) + cols - 1) // cols
+    fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
     axes = axes.ravel()
-    plot_index = 0
-    for name, param in model.named_parameters():
-        if param.dim() > 1:
-            ax = axes[plot_index]
-            param_cpu = param.detach().view(-1).cpu()
-            if count_nonzero_only:
-                param_cpu = param_cpu[param_cpu != 0]
-            ax.hist(param_cpu, bins=bins, density=True, color='blue', alpha=0.5)
-            ax.set_xlabel(name)
-            ax.set_ylabel('density')
-            plot_index += 1
-            if plot_index >= len(axes):  # avoid index error
-                break
-    fig.suptitle('Histogram of Weights')
+
+    for idx, (name, param) in enumerate(weight_params):
+        ax = axes[idx]
+        param_cpu = param.detach().view(-1).cpu()
+        if count_nonzero_only:
+            param_cpu = param_cpu[param_cpu != 0]
+        ax.hist(param_cpu, bins=bins, density=True, color='blue', alpha=0.5)
+        ax.set_xlabel(name, fontsize=8)
+        ax.set_ylabel('density')
+
+    # Hide unused subplots
+    for ax in axes[len(weight_params):]:
+        ax.axis('off')
+
+    fig.suptitle('Histogram of Weights', fontsize=16)
     fig.tight_layout()
-    fig.subplots_adjust(top=0.925)
+    fig.subplots_adjust(top=0.92)
     plt.show()
 
 def plot_num_parameters_distribution(model):
