@@ -12,13 +12,14 @@ def train(
   optimizer: Optimizer,
   scheduler: LambdaLR,
   callbacks = None
+  device: str = 'cuda',
 ) -> None:
   model.train()
 
   for inputs, targets in tqdm(dataloader, desc='train', leave=False):
     # Move the data from CPU to GPU
-    inputs = inputs.cuda()
-    targets = targets.cuda()
+    inputs = inputs.to(device)
+    targets = targets.to(device)
 
     # Reset the gradients (from the last iteration)
     optimizer.zero_grad()
@@ -42,7 +43,8 @@ def train(
 def evaluate(
   model: nn.Module,
   dataloader: DataLoader,
-  verbose=True,
+  verbose=False
+  device: str = 'cuda',
 ) -> float:
   model.eval()
 
@@ -51,9 +53,9 @@ def evaluate(
 
   for inputs, targets in tqdm(dataloader, desc="eval", leave=False,
                               disable=not verbose):
-    # Move the data from CPU to GPU
-    inputs = inputs.cuda()
-    targets = targets.cuda()
+    # Move the data to device
+    inputs = inputs.to(device)
+    targets = targets.to(device)
 
     # Inference
     outputs = model(inputs)

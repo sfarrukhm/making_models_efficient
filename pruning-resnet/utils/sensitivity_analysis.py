@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from utils.prune_utils import fine_grained_prune
 from utils.train_evaluate import evaluate
 @torch.no_grad()
-def sensitivity_scan(model, dataloader, scan_step=0.1, scan_start=0.4, scan_end=1.0, verbose=True):
+def sensitivity_scan(model, dataloader, device='cuda',scan_step=0.1, scan_start=0.4, scan_end=1.0, verbose=False):
     """
     Performs a sensitivity analysis for each layer of the model by applying different sparsity levels 
     and evaluating how it affects accuracy.
@@ -51,7 +51,7 @@ def sensitivity_scan(model, dataloader, scan_step=0.1, scan_start=0.4, scan_end=
             fine_grained_prune(param.detach(), sparsity=sparsity)
 
             # Evaluate model accuracy on the validation/test set
-            acc = evaluate(model, dataloader, verbose=False)
+            acc = evaluate(model, dataloader, device,verbose=False)
             accuracy.append(acc)
 
             # Optionally print real-time progress
