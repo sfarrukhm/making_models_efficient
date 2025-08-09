@@ -1,5 +1,5 @@
 import torch
-
+from utils.prune_utils import fine_grained_prune
 class FineGrainedPruner:
     """
     This class performs fine-grained pruning on a PyTorch model.
