@@ -37,7 +37,7 @@ Fine-grained pruning operates at the **individual weight level**, as opposed to 
 |                | MACs (M) | Params (M) | Sparsity (%) | Size (MB) | Accuracy (%) |
 | -------------- | -------- | ---------- | ------------ | --------- | ------------ |
 | Before Pruning | 1816.05  | 11.18      | 0.00         | 42.72     | 90.23        |
-| After Pruning  | 1816.05  | 11.18      | 79.93        | 42.72     | 91.47        |
+| After Pruning  | 1816.05  | 11.18      | 79.93        | 8.67     | 91.47        |
 
 ---
 
@@ -53,5 +53,6 @@ Fine-grained pruning operates at the **individual weight level**, as opposed to 
 
 Fine-grained pruning is a **lightweight regularization tool** that can improve accuracy and model sparsity without retraining from scratch.  
 However, for actual runtime speedups or storage savings, **structured pruning or sparse-aware deployment** is required.
+
 
 
