@@ -28,6 +28,6 @@ def sensitivity_scan(model, dataloader, scan_step=0.1, scan_start=0.4, scan_end=
 
         accuracies.append(layer_accuracies)
 
-    return sparsities, accuracies
+    return sparsities, accuraciesex
 
 

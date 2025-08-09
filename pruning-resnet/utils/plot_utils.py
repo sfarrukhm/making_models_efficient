@@ -1,5 +1,7 @@
-import matplotlib.pyplot as plt
 import math
+import matplotlib.pyplot as plt
+import numpy as np
+
 # Histogram of weight distribution
 def plot_weight_distribution(model, bins=256, count_nonzero_only=False):
     # Get all params with dim > 1
@@ -30,82 +32,55 @@ def plot_weight_distribution(model, bins=256, count_nonzero_only=False):
     plt.show()
 
 def plot_num_parameters_distribution(model):
-    """
-    Plots number of parameters for each prunable layer in the model.
-    Useful for deciding sparsity levels.
-    """
-    num_parameters = {
-        name: param.numel()
-        for name, param in model.named_parameters()
-        if param.dim() > 1  # Only conv/linear layers
-    }
-
-    plt.figure(figsize=(8, 6))
-    plt.bar(num_parameters.keys(), num_parameters.values())
+    num_parameters = {name: param.numel() for name, param in model.named_parameters() if param.dim() > 1}
+    
+    # Dynamic figure width: 0.5 inch per layer, minimum 12 inches
+    fig_width = max(12, 0.5 * len(num_parameters))
+    fig_height = 6
+    
+    fig = plt.figure(figsize=(fig_width, fig_height))
     plt.grid(axis='y')
+    plt.bar(list(num_parameters.keys()), list(num_parameters.values()))
     plt.title('#Parameter Distribution')
     plt.ylabel('Number of Parameters')
-    plt.xticks(rotation=60)
+    plt.xticks(rotation=60, ha='right')  # rotate & align right for clarity
     plt.tight_layout()
     plt.show()
 
-def plot_sensitivity_scan(sparsities, accuracies, dense_model_accuracy):
-    """
-    Plots layer-wise sensitivity curves: sparsity vs. validation accuracy.
-    """
+
+def plot_sensitivity_scan(sparsities, accuracies, dense_model_accuracy, model):
+    # Collect names of all parameters with dim > 1 (weights of conv, fc, etc.)
+    layer_names = [name for name, param in model.named_parameters() if param.dim() > 1]
+    n_plots = len(layer_names)
+    
+    # Set layout: 3 columns, enough rows to fit all plots
+    n_cols = 3
+    n_rows = math.ceil(n_plots / n_cols)
+    
+    # Adjust figure size dynamically (5x4 inches per subplot is a good start)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows))
+    axes = axes.ravel()  # Flatten axes array for easy indexing
+    
+    # Calculate lower bound line for plotting
     lower_bound_accuracy = 100 - (100 - dense_model_accuracy) * 1.5
-
-    fig, axes = plt.subplots(3, math.ceil(len(accuracies) / 3), figsize=(15, 8))
-    axes = axes.ravel()
-    plot_index = 0
-
-    for name, param in model.named_parameters():
-        if param.dim() > 1:
-            ax = axes[plot_index]
-
-            # Accuracy curve for this layer
-            ax.plot(sparsities, accuracies[plot_index], label='accuracy after pruning')
-            # Horizontal line: acceptable accuracy drop
-            ax.plot(sparsities, [lower_bound_accuracy] * len(sparsities),
-                    label=f'{lower_bound_accuracy / dense_model_accuracy * 100:.0f}% of dense acc')
-
-            ax.set_xticks(np.arange(0.4, 1.0, 0.1))
-            ax.set_ylim(80, 95)
-            ax.set_title(name)
-            ax.set_xlabel('sparsity')
-            ax.set_ylabel('top-1 accuracy')
-            ax.legend()
-            ax.grid(axis='x')
-
-            plot_index += 1
-
-    fig.suptitle('Sensitivity Curves: Validation Accuracy vs. Pruning Sparsity')
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.925)
-    plt.show()
-  
-def plot_sensitivity_scan(sparsities, accuracies, dense_model_accuracy):
-    lower_bound_accuracy = 100 - (100 - dense_model_accuracy) * 1.5
-    fig, axes = plt.subplots(3, int(math.ceil(len(accuracies) / 3)),figsize=(15,8))
-    axes = axes.ravel()
-    plot_index = 0
-    for name, param in model.named_parameters():
-        if param.dim() > 1:
-            ax = axes[plot_index]
-            curve = ax.plot(sparsities, accuracies[plot_index])
-            line = ax.plot(sparsities, [lower_bound_accuracy] * len(sparsities))
-            ax.set_xticks(np.arange(start=0.4, stop=1.0, step=0.1))
-            ax.set_ylim(80, 95)
-            ax.set_title(name)
-            ax.set_xlabel('sparsity')
-            ax.set_ylabel('top-1 accuracy')
-            ax.legend([
-                'accuracy after pruning',
-                f'{lower_bound_accuracy / dense_model_accuracy * 100:.0f}% of dense model accuracy'
-            ])
-            ax.grid(axis='x')
-            plot_index += 1
-    fig.suptitle('Sensitivity Curves: Validation Accuracy vs. Pruning Sparsity')
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.925)
+    
+    for idx, name in enumerate(layer_names):
+        ax = axes[idx]
+        ax.plot(sparsities, accuracies[idx], label="accuracy after pruning")
+        ax.plot(sparsities, [lower_bound_accuracy]*len(sparsities), 
+                label=f'{lower_bound_accuracy / dense_model_accuracy * 100:.0f}% of dense accuracy')
+        ax.set_xticks(np.arange(sparsities[0], sparsities[-1]+0.01, step=0.1))
+        ax.set_ylim(lower_bound_accuracy - 1, dense_model_accuracy+2)  
+        ax.set_title(name)
+        ax.set_xlabel('Sparsity')
+        ax.set_ylabel('Top-1 Accuracy')
+        ax.legend()
+        ax.grid(axis='x')
+    
+    # Hide unused axes (if any)
+    for i in range(n_plots, n_rows * n_cols):
+        fig.delaxes(axes[i])
+    
+    fig.suptitle('Sensitivity Curves: Validation Accuracy vs. Pruning Sparsity', fontsize=16)
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
